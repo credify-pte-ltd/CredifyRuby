@@ -18,9 +18,74 @@ Or install it yourself as:
 
 ## Usage
 
+### Signing
+
+Signing is using EdDSA (curve: Ed25519). The key size is 32 bytes. This SDK uses 32 byte length seed data for importing an existing key.
+
+```ruby
+require 'credify'
+
+def new_key_is_generated
+  signing = Signing.new
+  signing.generate_key_pair
+  signature = signing.sign "message"
+  valid = signing.verify "message", signature
+  puts valid
+end
+
+def existing_key_is_used
+  signing = Signing.new
+  signing.import_seed "UseZb/HIOiqrYSLqVmMdbiILuLTdiGRA3hZ3QwiEiBU="
+  signature = signing.sign "message"
+  valid = signing.verify "message", signature
+  puts valid
+end
+
+def generate_approval_token
+  signing = Signing.new
+  signing.generate_key_pair
+  token = signing.generate_approval_token 'client_id', 'entity_id', ['openid', 'email', 'phone'], 'offer-code'
+  puts token
+end
+
+def generate_request_token
+  signing = Signing.new
+  signing.generate_key_pair
+  token = signing.generate_request_token 'client_id', 'encryption_public_key', ['openid', 'email', 'phone'], 'offer-code'
+  puts token
+end
+
+def generate_claim_token
+  signing = Signing.new
+  signing.generate_key_pair
+  result = signing.generate_claim_token 'provider_id', 'entity_id', 'credify-score', { score: 100 }
+  puts result
+end
+```
+
 ### Encryption
 
-### Signing
+Encryption is using RSA 4096 bit with OAEP padding. This SDK allows developers to use PKCS8 to deal with keys.
+
+```ruby
+require 'credify'
+
+def new_key_is_generated
+  encryption = Encryption.new
+  encryption.generate_key_pair
+  cipher_text = encryption.encrypt "secret message"
+  plain_text = encryption.decrypt cipher_text
+  pem = encryption.export_private_key
+  puts pem
+end
+
+def existing_key_is_used
+  encryption = Encryption.new
+  encryption.import_private_key "-----BEGIN PRIVATE KEY-----\nMI....."
+  cipher_text = encryption.encrypt "secret message"
+  plain_text = encryption.decrypt cipher_text 
+end
+```
 
 ## Development
 

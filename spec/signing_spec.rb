@@ -59,4 +59,31 @@ RSpec.describe Signing do
       expect(valid).to be_truthy
     end
   end
+
+  context 'when a user uses JWT' do
+    it 'succeeds to generate approval token' do
+      @s.import_seed(seed)
+      token = @s.generate_approval_token('client_id', 'entity_id', ['openid', 'email', 'phone'])
+      expect(token).to start_with('ey')
+      parsed_jwt = @s.parse_jwt(token)
+      expect(@s.verify_jwt(parsed_jwt)).to be_truthy
+    end
+
+    it 'succeeds to generate request token' do
+      @s.import_seed(seed)
+      token = @s.generate_request_token('client_id', 'encryption_public_key', ['openid', 'email', 'phone'])
+      expect(token).to start_with('ey')
+      parsed_jwt = @s.parse_jwt(token)
+      expect(@s.verify_jwt(parsed_jwt)).to be_truthy
+    end
+
+    it 'succeeds to generate claim token' do
+      @s.import_seed(seed)
+      result = @s.generate_claim_token('provider_id', 'entity_id', 'credify-score', { score: 100 })
+      expect(result).to include({ :token => a_string_starting_with('ey'), :commitment => be_a(String) })
+      parsed_jwt = @s.parse_jwt(result[:token])
+      expect(@s.verify_jwt(parsed_jwt)).to be_truthy
+    end
+
+  end
 end

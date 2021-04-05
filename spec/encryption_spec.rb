@@ -127,6 +127,12 @@ Bo7iHDNn/q58akCJ6edjGUECAwEAAQ==
       expect(key).to eq private_key_pem
     end
 
+    it 'succeeds to import public key in Base64 URL' do
+      @e.import_public_key_base64_url(public_key_base64_url)
+      key = @e.export_public_key
+      expect(key).to eq public_key_pem
+    end
+
     it 'succeeds to export private key in Base64 URL' do
       @e.import_private_key(private_key_pem)
       key = @e.export_private_key(true)
