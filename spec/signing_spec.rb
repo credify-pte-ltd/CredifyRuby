@@ -4,9 +4,9 @@ require 'base64'
 
 RSpec.describe Signing do
 
-  let(:signature) { 'olq3UTFEdJAgYpN1JifKRhhci9LGjwmZ83NtlHGpT19T5uJdEaPc7CTfW_hL3V-Gyoblt6LXfbqw0yfXOAoTBQ' }
+  let(:signature) { 'oJ6yDFkgsQk8wMqLQm2vtBVKxJ69fH2oU5SYIrCaTy5RjHdpIFBT_UV8I8PbJj_Gv7ll2bc2FFGepURUC23SBg' }
   let(:message) { 'This is a test message!' }
-  let(:seed) { 'UseZb/HIOiqrYSLqVmMdbiILuLTdiGRA3hZ3QwiEiBU=' }
+  let(:seed) { '-o7hvhS1dJpYanm7fysJdi7j8t1tpKTuUPjou1FS7jg' }
 
   before do
     @s = Signing.new
@@ -23,12 +23,6 @@ RSpec.describe Signing do
       expect(sign).not_to be nil
       valid = @s.verify(sign, message)
       expect(valid).to be_truthy
-    end
-
-    it 'exports 32 byte seed' do
-      @s.generate_key_pair
-      seed = @s.export_seed
-      expect(Base64.decode64(seed).length).to eq 32
     end
   end
 

@@ -17,10 +17,11 @@ class Signing
 
   #
   # import_seed
-  # @param [String] seed - Base64 encoded 32 byte seed data
+  # @param [String] seed - Base64 URL encoded seed data
   # @return [Boolean]
   def import_seed(seed)
-    @signing_key = Ed25519::SigningKey.new(Base64.decode64(seed))
+    binary = Credify::Helpers.short_urlsafe_decode64(seed)
+    @signing_key = Ed25519::SigningKey.new(binary)
     @signing_key.nil?
   end
 
@@ -51,12 +52,12 @@ class Signing
 
   #
   # export_seed
-  # @return [String] - Base64 encoded 32 bytes seed data
+  # @return [String] - Base64 URL encoded seed data
   def export_seed
     if @signing_key.nil?
       raise Exception.new 'Please pass signing key'
     end
-    Base64.encode64(@signing_key.seed)
+    Credify::Helpers.short_urlsafe_encode64(@signing_key.seed)
   end
 
   #

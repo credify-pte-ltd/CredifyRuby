@@ -35,7 +35,7 @@ end
 
 def existing_key_is_used
   signing = Signing.new
-  signing.import_seed "UseZb/HIOiqrYSLqVmMdbiILuLTdiGRA3hZ3QwiEiBU="
+  signing.import_seed "-o7hvhS1dJpYanm7fysJdi7j8t1tpKTuUPjou1FS7jg"
   signature = signing.sign "message"
   valid = signing.verify "message", signature
   puts valid
