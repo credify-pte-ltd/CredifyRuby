@@ -23,7 +23,7 @@ Or install it yourself as:
 Signing is using EdDSA (curve: Ed25519). The key size is 32 bytes. This SDK uses 32 byte length seed data for importing an existing key.
 
 ```ruby
-require 'credify'
+require 'credify/signing'
 
 def new_key_is_generated
   signing = Signing.new
@@ -68,7 +68,7 @@ end
 Encryption is using RSA 4096 bit with OAEP padding. This SDK allows developers to use PKCS8 to deal with keys.
 
 ```ruby
-require 'credify'
+require 'credify/encryption'
 
 def new_key_is_generated
   encryption = Encryption.new
