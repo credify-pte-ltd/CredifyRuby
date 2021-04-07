@@ -4,9 +4,9 @@ require 'base64'
 
 RSpec.describe Signing do
 
-  let(:signature) { 'olq3UTFEdJAgYpN1JifKRhhci9LGjwmZ83NtlHGpT19T5uJdEaPc7CTfW_hL3V-Gyoblt6LXfbqw0yfXOAoTBQ' }
+  let(:signature) { 'oJ6yDFkgsQk8wMqLQm2vtBVKxJ69fH2oU5SYIrCaTy5RjHdpIFBT_UV8I8PbJj_Gv7ll2bc2FFGepURUC23SBg' }
   let(:message) { 'This is a test message!' }
-  let(:seed) { 'UseZb/HIOiqrYSLqVmMdbiILuLTdiGRA3hZ3QwiEiBU=' }
+  let(:seed) { '-o7hvhS1dJpYanm7fysJdi7j8t1tpKTuUPjou1FS7jg' }
 
   before do
     @s = Signing.new
@@ -23,12 +23,6 @@ RSpec.describe Signing do
       expect(sign).not_to be nil
       valid = @s.verify(sign, message)
       expect(valid).to be_truthy
-    end
-
-    it 'exports 32 byte seed' do
-      @s.generate_key_pair
-      seed = @s.export_seed
-      expect(Base64.decode64(seed).length).to eq 32
     end
   end
 
@@ -58,5 +52,32 @@ RSpec.describe Signing do
       valid = @s.verify(signature, message)
       expect(valid).to be_truthy
     end
+  end
+
+  context 'when a user uses JWT' do
+    it 'succeeds to generate approval token' do
+      @s.import_seed(seed)
+      token = @s.generate_approval_token('client_id', 'entity_id', ['openid', 'email', 'phone'])
+      expect(token).to start_with('ey')
+      parsed_jwt = @s.parse_jwt(token)
+      expect(@s.verify_jwt(parsed_jwt)).to be_truthy
+    end
+
+    it 'succeeds to generate request token' do
+      @s.import_seed(seed)
+      token = @s.generate_request_token('client_id', 'encryption_public_key', ['openid', 'email', 'phone'])
+      expect(token).to start_with('ey')
+      parsed_jwt = @s.parse_jwt(token)
+      expect(@s.verify_jwt(parsed_jwt)).to be_truthy
+    end
+
+    it 'succeeds to generate claim token' do
+      @s.import_seed(seed)
+      result = @s.generate_claim_token('provider_id', 'entity_id', 'credify-score', { score: 100 })
+      expect(result).to include({ :token => a_string_starting_with('ey'), :commitment => be_a(String) })
+      parsed_jwt = @s.parse_jwt(result[:token])
+      expect(@s.verify_jwt(parsed_jwt)).to be_truthy
+    end
+
   end
 end
